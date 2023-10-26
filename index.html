@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimum Spanning Tree Finder using the Kruskal and Prims algorithm</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            overflow-x: hidden;
+            background-color: #9681EB;
+        }
+        button{
+    font-size: 15px;
+    width: 160px;
+    height: 25px;
+    background-color: #6527BE;
+    color: #45CFDD;
+    border: 1px solid white;
+    border-radius: 3px;
+    size-adjust: 15px;
+    size: a3;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    left: 120px;
+    cursor: pointer;
+        }
+
+        header{
+            background-color: #6527BE;
+
+        }
+        nav{
+            /* border: 1px solid black; */
+            color: #45CFDD;
+        }
+        nav h1{
+            position: relative;
+  top: 23px;
+  font-size: 40px;
+  left: 23px;
+        }
+        nav h2{
+            position: relative;
+            /* left: 50px; */
+            top: -24px;
+            text-align: center;
+            font-size: 40px;
+        }
+        main{
+            /* border: 1px solid red; */
+            height: 100%;
+             width: 500px;
+             position: relative;
+             top: 36px;
+             left: 483px;
+             color: #021ffc;
+        }
+        main .enter h2{
+            text-align: center;
+            
+        }
+        .e{
+            size: 40px;
+        }
+        .Gg button{
+            position: relative;
+            left: 20px;
+            top: 20px;
+        }
+        .p{
+            /* border: 1px solid yellow; */
+  position: relative;
+  left: 332px;
+  top: -55px;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>
+                MST Finder
+            </h1>
+            <h2>
+                Implementation of Kruskal's and Prim's Algorithm
+            </h2>
+        </nav>
+    </header>
+    <main>
+        <div class="enter">
+        <h2 class="e">Enter the Graph data</h2>
+        <br>
+        <br>
+        <label for="num-vertices">Number of Vertices:</label>
+    <input type="number" id="num-vertices" min="2">
+    <br>
+    <br>
+    <label for="num-edges">Number of Edges:</label>
+    <input type="number" id="num-edges" min="1">
+    <br>
+</div>
+<br>
+    <button id="generate-graph" class="Gg">Generate Graph</button>
+    <br>
+    <div id="graph-input" style="display: none;">
+    </div>
+    <br>
+    <button id="run-kruskal">Kruskal's Algorithm</button>
+    <br>
+    <button id="run-prim">Prim's Algorithm</button>
+    <br>
+    <div class="k">
+        <h1>Kruskal's Algorithm</h1>
+        <div id="kruskal-output">
+        </div>
+    </div>
+    <br>
+    <div class="p">
+        <h1>Prim's Algorithm</h1>
+    <div id="prim-output">
+    </div>
+    </div>
+    </main>
+    <script>
+         // Function to implement Kruskal's algorithm
+        function kruskal(graph) {
+            const edges = graph.edges;
+            edges.sort((a, b) => a.weight - b.weight); // Sort edges by weight
+            const parent = {};
+            // this will take the input as array 
+            // sorting the values of the edged in the accending order 
+            // this object is used to store the parent of the node 
+            function find(node) {
+                if (parent[node] === undefined) {
+                    return node;
+                }
+                return find(parent[node]);
+            }
+             // the above function finds the value of the root node of the given node 
+            // if  the node is the parent of itself it will return the node otherwise the function is called recursively 
+            const kruskalEdges = [];
+
+            for (const edge of edges) {
+                const rootA = find(edge.source);//used to find the source node
+                const rootB = find(edge.target);//used to find the target node
+
+                if (rootA !== rootB) {
+                    kruskalEdges.push(edge);//adding the value of the edges to the array 
+                    parent[rootA] = rootB;
+                }
+            }
+
+            return kruskalEdges;
+            // in the above function k_edges is used to store the edges value of the graph for obtained after implementing the kruskal's algorithm 
+        }
+
+        // Function to implement Prim's algorithm
+        function prim(graph) {
+            const vertices = graph.nodes;
+            const edges = graph.edges;
+            const visited = {};
+
+            const primEdges = [];
+            visited[vertices[0]] = true;
+             // takes the graph as an input 
+            // visited object is use dto store the values of the visited vertices 
+            // p_edges is used to store the value of the  vertices 
+            // initially the visited edges are 0
+            // when the visited vertices are less then the total vertices 
+            while (Object.keys(visited).length < vertices.length) {
+                let minWeight = Infinity;
+                let minEdge = null;
+
+                for (const edge of edges) {
+                    if (visited[edge.source] && !visited[edge.target] && edge.weight < minWeight) {
+                        minWeight = edge.weight;
+                        minEdge = edge;
+                    }
+                }
+                // here checking the condition for visiing the vertices 
+                if (minEdge) {
+                    primEdges.push(minEdge);
+                    visited[minEdge.target] = true;
+                }
+                
+            }
+
+            return primEdges;
+             // after implementing the for the finding the proper edges and adding it to the array
+        }
+
+        // Handle user input
+        document.getElementById('generate-graph').addEventListener('click', function () {
+            const numVertices = parseInt(document.getElementById('num-vertices').value);
+            const numEdges = parseInt(document.getElementById('num-edges').value);
+            const graphInputDiv = document.getElementById('graph-input');
+            // takes the input from the user and converrts it to the integers 
+            let inputFields = '';// initially the operation string is null 
+            for (let i = 0; i < numEdges; i++) {
+                inputFields += `
+                    <label for="edge-${i}">Edge ${i + 1} (e.g., "A B 5"):</label>
+                    <input type="text" id="edge-${i}">
+                    <br>
+                `;
+            }
+
+            graphInputDiv.innerHTML = inputFields;
+            graphInputDiv.style.display = 'block';
+        });
+
+        // Run Kruskal's algorithm
+        document.getElementById('run-kruskal').addEventListener('click', function () {
+            const edges = [];
+            for (let i = 0; i < parseInt(document.getElementById('num-edges').value); i++) {
+                 // for the no. of the edges entered by the user
+                const input = document.getElementById(`edge-${i}`).value;
+                const [source, target, weight] = input.split(' ');
+                // spliting the input from the user into 3 parts : 
+                // like A B 5 ---> A--> source vertice , B --->destination vertice , 5--->weighht of the edge 
+                edges.push({ source, target, weight: parseInt(weight) });
+                  // pushing the value in the array edges 
+            }
+
+            const graph = {
+                nodes: [],
+                edges,
+            };
+             // creaing a graph with nodes and edges properties. 
+
+            edges.forEach(edge => {
+                if (!graph.nodes.includes(edge.source)) {
+                    graph.nodes.push(edge.source);
+                }
+                if (!graph.nodes.includes(edge.target)) {
+                    graph.nodes.push(edge.target);
+                }
+            });
+             // this for loop ensures that the all the edges that are added are unique and doesn't form the cycle 
+            const kruskalResult = kruskal(graph);
+            // finding the MST using the kruskal on the graph 
+            // displaying the output of the kruskal's algorithm
+            // Display Kruskal's output as list items
+            const kruskalOutputList = document.getElementById('kruskal-output');
+            kruskalOutputList.innerHTML = ''; // Clear previous output
+            kruskalResult.forEach(edge => {
+                  // looping throught the edges of the kruskal algorihtm edges 
+                const listItem = document.createElement('li');
+                listItem.textContent = `${edge.source} - ${edge.target} (${edge.weight})`; // setting the edge name and its weight into a list 
+                kruskalOutputList.appendChild(listItem);
+                // displaying the list by appending it to the output list 
+            });
+        });
+
+        // implementing the Prim's algorithm
+        document.getElementById('run-prim').addEventListener('click', function () {
+            const edges = [];
+            for (let i = 0; i < parseInt(document.getElementById('num-edges').value); i++) {
+                const input = document.getElementById(`edge-${i}`).value;
+                const [source, target, weight] = input.split(' ');
+                edges.push({ source, target, weight: parseInt(weight) });
+            }
+
+            const nodes = [];
+            edges.forEach(edge => {
+                if (!nodes.includes(edge.source)) {
+                    nodes.push(edge.source);
+                }
+                if (!nodes.includes(edge.target)) {
+                    nodes.push(edge.target);
+                }
+            });
+               // above lop checks for the unique edges and stores it in the array 
+            const graph = {
+                nodes,
+                edges,
+            };
+
+            const primResult = prim(graph);
+              // Display Prim's output as list items
+            // Display Prim's output as list items
+            const primOutputList = document.getElementById('prim-output');
+            primOutputList.innerHTML = ''; // Clear previous output
+            primResult.forEach(edge => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${edge.source} - ${edge.target} (${edge.weight})`;
+                primOutputList.appendChild(listItem);
+                 // nw list is created and stores the edge name and weight 
+            });
+        });
+    </script>
+</body>
+</html>
